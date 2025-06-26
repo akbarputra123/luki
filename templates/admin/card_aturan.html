@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Daftar Aturan{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/basis.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="header-with-back">
+    <a href="{{ url_for('basis_pengetahuan_route') }}" class="back-button">
+      <i class="fas fa-arrow-left"></i> Kembali
+    </a>
+    <h1>Daftar Aturan</h1>
+  </div>
+  
+  <table class="knowledge-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Penyakit/Hama</th>
+        <th>Gejala</th>
+        <th>MB</th>
+        <th>MD</th>
+        <th>CF</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for aturan in daftar_aturan %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ aturan.kode_penyakit }} - {{ aturan.nama_penyakit }}</td>
+        <td>{{ aturan.kode_gejala }} - {{ aturan.nama_gejala }}</td>
+        <td>{{ aturan.mb }}</td>
+        <td>{{ aturan.md }}</td>
+        <td data-label="CF">{{ (aturan.mb - aturan.md) | round(2) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

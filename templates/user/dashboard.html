@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Pengguna{% endblock %}
+
+{% block content %}
+  <h1>Selamat Datang, {{ session['username'] }}!</h1>
+  <p>Silakan pilih menu di sebelah kiri untuk melakukan konsultasi diagnosa atau melihat hasil diagnosa Anda.</p>
+{% endblock %}

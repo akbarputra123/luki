@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Hasil Diagnosa{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user/riwayat_user.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Hasil Diagnosa</h1>
+
+{% if riwayat %}
+<table border="1">
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Penyakit/Hama</th>
+      <th>Nilai Cf</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in riwayat %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ item.nama_penyakit }}</td>
+      <td>{{ (item.nilai_cf * 100)|round(2) }}%</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% else %}
+<p>Belum ada riwayat konsultasi.</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/user/riwayat.js') }}"></script>
+{% endblock %}

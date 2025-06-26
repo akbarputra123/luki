@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Daftar Gejala{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/basis.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="header-with-back">
+    <a href="{{ url_for('basis_pengetahuan_route') }}" class="back-button">
+      <i class="fas fa-arrow-left"></i> Kembali
+    </a>
+    <h1>Daftar Gejala</h1>
+  </div>
+  
+  <table class="knowledge-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Kode Gejala</th>
+        <th>Nama Gejala</th>
+        <th>Deskripsi</th>
+        <th>Kategori</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for gejala in daftar_gejala %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ gejala.kode_gejala }}</td>
+        <td>{{ gejala.nama_gejala }}</td>
+        <td>{{ gejala.deskripsi }}</td>
+        <td>{{ gejala.kategori }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

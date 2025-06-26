@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Basis Pengetahuan{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/basis.css') }}">
+{% endblock %}
+
+{% block content %}
+  <h1>Basis Pengetahuan</h1>
+  
+  <div class="card-container">
+    <!-- Card Gejala -->
+    <a href="{{ url_for('card_gejala_route') }}" class="knowledge-card">
+      <div class="card-icon">
+        <i class="fas fa-clipboard-list"></i>
+      </div>
+      <div class="card-content">
+        <h2>Gejala</h2>
+        <p>Total: {{ daftar_gejala|length }} gejala</p>
+      </div>
+    </a>
+    
+    <!-- Card Penyakit/Hama -->
+    <a href="{{ url_for('card_penyakit_route') }}" class="knowledge-card">
+      <div class="card-icon">
+        <i class="fas fa-bug"></i>
+      </div>
+      <div class="card-content">
+        <h2>Penyakit/Hama</h2>
+        <p>Total: {{ daftar_penyakit|length }} penyakit/hama</p>
+      </div>
+    </a>
+    
+    <!-- Card Aturan -->
+    <a href="{{ url_for('card_aturan_route') }}" class="knowledge-card">
+      <div class="card-icon">
+        <i class="fas fa-project-diagram"></i>
+      </div>
+      <div class="card-content">
+        <h2>Aturan</h2>
+        <p>Total: {{ daftar_aturan|length }} aturan</p>
+      </div>
+    </a>
+  </div>
+{% endblock %}

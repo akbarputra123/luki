@@ -1,0 +1,51 @@
+{% block head %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/register.css') }}">
+{% endblock %}
+
+{% block content %}
+  <h2>Registrasi</h2>
+
+  <form method="POST">
+    <div class="input-group">
+      <input type="text" name="nama_lengkap" placeholder="Nama Lengkap" required>
+    </div>
+
+    <div class="input-group">
+      <input type="text" name="username" placeholder="Username" required>
+    </div>
+
+    <div class="input-group">
+      <input type="password" name="password" placeholder="Password" required>
+    </div>
+
+    <div class="input-group">
+      <input type="password" name="confirm_password" placeholder="Konfirmasi Password" required>
+    </div>
+
+    <div class="input-group">
+      <input type="date" name="tanggal_lahir" placeholder="Masukan Tanggal Lahir">
+    </div>
+
+    <button type="submit">Daftar</button>
+
+    <!-- Link ke login -->
+    <p class="login-link">
+      Sudah punya akun? <a href="{{ url_for('login_route') }}">Login di sini</a>
+    </p>
+  </form>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flash-messages">
+        {% for msg in messages %}
+          <li>{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/auth/register.js') }}"></script>
+{% endblock %}

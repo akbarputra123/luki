@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Detail Riwayat Konsultasi{% endblock %}
+
+{% block content %}
+  <h1>Detail Konsultasi</h1>
+
+  <div class="detail-header">
+    <h2>Diagnosa pada {{ diagnosa.tanggal_diagnosa.strftime('%d-%m-%Y %H:%M') }}</h2>
+    <p>Penyakit Terdiagnosa: <strong>{{ diagnosa.nama_penyakit }}</strong></p>
+    <p>Tingkat Keyakinan: <strong>{{ (diagnosa.nilai_cf * 100)|round(2) }}%</strong></p>
+  </div>
+  <div class="detail-penyakit">
+    <h3>Deskripsi Penyakit:</h3>
+    <p>{{ diagnosa.deskripsi_penyakit }}</p>
+    
+    <h3>Solusi:</h3>
+    <p>{{ diagnosa.solusi_penyakit }}</p>
+  </div>
+
+  <div class="detail-gejala">
+    <h3>Gejala yang Teridentifikasi:</h3>
+    <ul>
+      {% for gejala in diagnosa.gejala_terpilih %}
+      <li>{{ gejala.nama_gejala }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="actions">
+    <a href="{{ url_for('konsultasi_route') }}" class="btn">Konsultasi Baru</a>
+    <a href="{{ url_for('riwayat_konsultasi_route') }}" class="btn">Kembali ke Riwayat</a>
+  </div>
+{% endblock %}

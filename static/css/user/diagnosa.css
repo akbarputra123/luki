@@ -1,0 +1,79 @@
+/* Judul Halaman */
+h1, h2, h3, h4 {
+  color: #1e3a8a;
+  margin-bottom: 1rem;
+}
+
+/* Section Umum */
+section {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Pertanyaan */
+.pertanyaan-gejala form div {
+  margin-bottom: 1rem;
+}
+
+.pertanyaan-gejala label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Tombol Umum */
+button,
+a.btn {
+  background-color: #1e3a8a;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+button:hover,
+a.btn:hover {
+  background-color: #2563eb;
+}
+
+/* Hasil Diagnosa */
+.hasil-utama, .gejala-teridentifikasi {
+  margin-top: 1.5rem;
+}
+
+.gejala-teridentifikasi ul {
+  padding-left: 1.2rem;
+}
+
+.actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Responsif */
+@media (max-width: 600px) {
+  .actions {
+    flex-direction: column;
+  }
+
+  button, a.btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .pertanyaan-gejala label {
+    font-size: 0.95rem;
+  }
+}

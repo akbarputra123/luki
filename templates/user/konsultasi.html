@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Konsultasi Diagnosa{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user/diagnosa.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Konsultasi Diagnosa Hama Tanaman</h1>
+
+{% if current_step == 'start' %}
+<section class="konsultasi-start">
+  <h2>Mulai Konsultasi</h2>
+  <p>Silakan mulai konsultasi untuk mendiagnosa hama tanaman Anda.</p>
+  <form method="POST" action="{{ url_for('konsultasi_route') }}">
+    <input type="hidden" name="mulai" value="1">
+    <button type="submit">Mulai Konsultasi</button>
+  </form>
+</section>
+
+{% elif current_step == 'question' %}
+<section class="pertanyaan-gejala">
+  <h2>Pertanyaan Ke-{{ current_question }}{{ total_questions }}</h2>
+  <h3>{{ gejala.nama_gejala }}</h3>
+  {% if gejala.deskripsi %}
+  <p>{{ gejala.deskripsi }}</p>
+  {% endif %}
+
+  <form method="POST" action="{{ url_for('konsultasi_route') }}">
+    <input type="hidden" name="gejala_id" value="{{ gejala.id }}">
+    <input type="hidden" name="jawaban_step" value="1">
+    <div>
+      <label><input type="radio" name="jawaban" value="1" required> Ya (Sangat Yakin)</label>
+      <label><input type="radio" name="jawaban" value="0.8"> Ya (Cukup Yakin)</label>
+      <label><input type="radio" name="jawaban" value="0.6"> Ya (Agak Yakin)</label>
+      <label><input type="radio" name="jawaban" value="0"> Tidak Tahu</label>
+      <label><input type="radio" name="jawaban" value="-0.6"> Tidak (Agak Yakin)</label>
+      <label><input type="radio" name="jawaban" value="-0.8"> Tidak (Cukup Yakin)</label>
+      <label><input type="radio" name="jawaban" value="-1"> Tidak (Sangat Yakin)</label>
+    </div>
+    <button type="submit">Lanjutkan</button>
+  </form>
+</section>
+
+{% elif current_step == 'result' %}
+<section class="hasil-diagnosa">
+  <h2>Hasil Diagnosa</h2>
+
+  {% if hasil %}
+  <div class="hasil-utama">
+    <h3>Diagnosa: {{ hasil.nama_penyakit }}</h3>
+    <p>Tingkat Keyakinan: {{ (hasil.nilai_cf * 100)|round(2) }}%</p>
+
+  </div>
+  {% else %}
+  <p><strong>Maaf, tidak ditemukan hasil diagnosa berdasarkan gejala yang Anda pilih.</strong></p>
+  {% endif %}
+
+  <div class="actions">
+    <a href="{{ url_for('konsultasi_route') }}" class="btn">Konsultasi Baru</a>
+    <a href="{{ url_for('dashboard_user') }}" class="btn">Kembali ke Dashboard</a>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/user/diagnosa.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% block head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth/lupa.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+<div class="login-container">
+  <h2 class="login-title">Lupa Password</h2>
+
+  <form method="POST" class="login-form">
+    <div class="input-group">
+      <i class="fas fa-user"></i>
+      <input type="text" name="username" placeholder="Username" required>
+    </div>
+    <button type="submit">Lanjut</button>
+  </form>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flash-messages">
+        {% for msg in messages %}
+          <li>{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+</div>
+

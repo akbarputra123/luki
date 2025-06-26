@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Sistem Admin{% endblock %}</title>
+
+  <!-- Font Awesome untuk ikon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Tambahkan file CSS sidebar -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/side_bar.css') }}">
+
+  {% block head %}{% endblock %}
+</head>
+
+<body>
+
+  <!-- Tombol Menu Mobile -->
+  <div class="mobile-menu-btn">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <!-- Overlay untuk HP -->
+  <div class="overlay"></div>
+
+  <!-- Sidebar Menu -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="role-text">
+        {% if session['role'] == 'admin' %}
+          <strong>Admin</strong>
+        {% elif session['role'] == 'user' %}
+          <strong>User</strong>
+        {% endif %}
+      </div>
+      <div class="sidebar-close">
+        <i class="fas fa-times"></i>
+      </div>
+    </div>
+
+    <nav>
+      <ul>
+        {% set path = request.path %}
+
+        {% if session['role'] == 'admin' %}
+        <li>
+          <a href="/admin/dashboard" class="{% if path == '/admin/dashboard' %}active{% endif %}">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/gejala" class="{% if path == '/admin/gejala' %}active{% endif %}">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Manajemen Gejala</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/hama" class="{% if path == '/admin/hama' %}active{% endif %}">
+            <i class="fas fa-bug"></i>
+            <span>Manajemen Hama dan Penyakit</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/aturan" class="{% if path == '/admin/aturan' %}active{% endif %}">
+            <i class="fas fa-project-diagram"></i>
+            <span>Manajemen Aturan</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/riwayat" class="{% if path == '/admin/riwayat' %}active{% endif %}">
+            <i class="fas fa-history"></i>
+            <span>Riwayat Diagnosa</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/basis-pengetahuan" class="{% if path == '/admin/basis-pengetahuan' %}active{% endif %}">
+            <i class="fas fa-book"></i>
+            <span>Basis Pengetahuan</span>
+          </a>
+        </li>
+
+        {% elif session['role'] == 'user' %}
+        <li>
+          <a href="/dashboard_user" class="{% if path == '/dashboard_user' %}active{% endif %}">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('konsultasi_route') }}" class="{% if path == url_for('konsultasi_route') %}active{% endif %}">
+            <i class="fas fa-search"></i>
+            <span>Konsultasi Diagnosa</span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('riwayat_konsultasi_route') }}" class="{% if path == url_for('riwayat_konsultasi_route') %}active{% endif %}">
+            <i class="fas fa-history"></i>
+            <span>Hasil Diagnosa</span>
+          </a>
+        </li>
+        {% endif %}
+
+       <li class="logout-link">
+  <a href="/logout" onclick="return confirm('Apakah Anda yakin ingin logout?')">
+    <i class="fas fa-sign-out-alt"></i>
+    <span>Logout</span>
+  </a>
+</li>
+
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- JavaScript Sidebar -->
+  <script src="{{ url_for('static', filename='js/side_bar.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+
+</html>

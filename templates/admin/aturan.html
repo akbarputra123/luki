@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Manajemen Aturan{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/aturan.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Manajemen Aturan</h1>
+<!-- Flash Message -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-messages">
+  {% for category, message in messages %}
+  <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+<!-- Form Tambah Aturan -->
+<section>
+  <h2>Tambah Aturan</h2>
+  <form action="/admin/aturan/tambah" method="POST">
+    <div>
+      <label for="penyakit_id">Penyakit/Hama:</label>
+      <select id="penyakit_id" name="penyakit_id" required>
+        <option value="">-- Pilih Penyakit/Hama --</option>
+        {% for penyakit in daftar_penyakit %}
+        <option value="{{ penyakit.id }}">{{ penyakit.kode_penyakit }} - {{ penyakit.nama_penyakit }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="gejala_id">Gejala:</label>
+      <select id="gejala_id" name="gejala_id" required>
+        <option value="">-- Pilih Gejala --</option>
+        {% for gejala in daftar_gejala %}
+        <option value="{{ gejala.id }}">{{ gejala.kode_gejala }} - {{ gejala.nama_gejala }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="mb">Measure of Belief (MB):</label>
+      <input type="number" id="mb" name="mb" step="0.01" min="0" max="1" required>
+    </div>
+    <div>
+      <label for="md">Measure of Disbelief (MD):</label>
+      <input type="number" id="md" name="md" step="0.01" min="0" max="1" required>
+    </div>
+    <button type="submit" class="btn-tambah">Tambah Aturan</button>
+
+  </form>
+</section>
+
+<!-- Daftar Aturan -->
+<section>
+  <h2>Daftar Aturan</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Penyakit/Hama</th>
+        <th>Gejala</th>
+        <th>MB</th>
+        <th>MD</th>
+        <th>CF</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for aturan in daftar_aturan %}
+      <tr>
+        <td data-label="No">{{ loop.index }}</td>
+        <td data-label="Penyakit/Hama">{{ aturan.kode_penyakit }} - {{ aturan.nama_penyakit }}</td>
+        <td data-label="Gejala">{{ aturan.kode_gejala }} - {{ aturan.nama_gejala }}</td>
+        <td data-label="MB">{{ aturan.mb }}</td>
+        <td data-label="MD">{{ aturan.md }}</td>
+        <td data-label="CF">{{ (aturan.mb - aturan.md) | round(2) }}</td>
+
+        <td data-label="Aksi">
+          <div class="action-buttons">
+            <a href="#" class="edit-button" data-id="{{ aturan.id }}" data-mb="{{ aturan.mb }}"
+              data-md="{{ aturan.md }}" data-penyakit-id="{{ aturan.penyakit_id }}"
+              data-gejala-id="{{ aturan.gejala_id }}" data-url="{{ url_for('edit_aturan_route', id=aturan.id) }}">
+              Edit
+            </a>
+
+
+            <form action="/admin/aturan/hapus/{{ aturan.id }}" method="POST"
+              onsubmit="return confirm('Yakin ingin menghapus aturan ini?')">
+              <button type="submit" class="delete-button">Hapus</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<!-- Modal Pop-up Edit Aturan -->
+<div id="editModal" class="modal">
+
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+    <h2>Edit Aturan</h2>
+    <form id="editForm" method="POST">
+      <input type="hidden" name="id" id="edit_id">
+
+      <div>
+        <label for="edit_penyakit_id">Penyakit/Hama:</label>
+        <select id="edit_penyakit_id" name="penyakit_id" required>
+          {% for penyakit in daftar_penyakit %}
+          <option value="{{ penyakit.id }}">{{ penyakit.kode_penyakit }} - {{ penyakit.nama_penyakit }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label for="edit_gejala_id">Gejala:</label>
+        <select id="edit_gejala_id" name="gejala_id" required>
+          {% for gejala in daftar_gejala %}
+          <option value="{{ gejala.id }}">{{ gejala.kode_gejala }} - {{ gejala.nama_gejala }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label for="edit_mb">Measure of Belief (MB):</label>
+        <input type="number" step="0.01" min="0" max="1" name="mb" id="edit_mb" required>
+      </div>
+      <div>
+        <label for="edit_md">Measure of Disbelief (MD):</label>
+        <input type="number" step="0.01" min="0" max="1" name="md" id="edit_md" required>
+      </div>
+      <div>
+        <button type="submit">Simpan Perubahan</button>
+        <button type="button" onclick="tutupModal()">Batal</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- Include JS -->
+<script src="{{ url_for('static', filename='js/admin/aturan.js') }}"></script>
+{% endblock %}

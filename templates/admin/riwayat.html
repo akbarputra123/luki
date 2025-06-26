@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}Riwayat Diagnosa{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/riwayat.css') }}">
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    tr:hover {
+      background-color: #f0f0f0;
+      cursor: pointer;
+    }
+
+    td, th {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #f9fafb;
+      color: #1f2937;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: #1e3a8a;
+    }
+
+    section {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .popup-title {
+      font-size: 1.5rem;
+      color: #1e3a8a;
+      margin: 0;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .gejala-list {
+      list-style-type: disc;
+      padding-left: 1.5rem;
+    }
+
+    .gejala-item {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <h1>Riwayat Diagnosa</h1>
+
+  <section>
+    {% if daftar_riwayat %}
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Waktu</th>
+          <th>Pengguna</th>
+          <th>Penyakit/Hama</th>
+          <th>Nilai CF</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for riwayat in daftar_riwayat %}
+        <tr class="row-diagnosa" data-id="{{ riwayat.id }}"
+            data-tanggal="{{ riwayat.tanggal_diagnosa or '' }}"
+            data-pengguna="{{ riwayat.username or '' }}"
+            data-penyakit="{{ riwayat.nama_penyakit or '' }}"
+            data-cf="{{ riwayat.nilai_cf or '' }}"
+            data-gejala="{{ riwayat.gejala|join(', ') if riwayat.gejala else '' }}">
+          <td>{{ loop.index }}</td>
+          <td>{{ riwayat.tanggal_diagnosa }}</td>
+          <td>{{ riwayat.username }}</td>
+          <td>{{ riwayat.nama_penyakit }}</td>
+          <td>{{ riwayat.nilai_cf }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p>Tidak ada riwayat diagnosa ditemukan.</p>
+    {% endif %}
+  </section>
+
+  <!-- Popup Detail -->
+  <div class="popup-overlay" id="detailPopup">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h2 class="popup-title">Detail Diagnosa</h2>
+        <button class="close-btn" onclick="closePopup()">&times;</button>
+      </div>
+      <div>
+        <p><strong>Tanggal:</strong> <span id="popupTanggal"></span></p>
+        <p><strong>Penyakit/Hama:</strong> <span id="popupPenyakit"></span></p>
+        <p><strong>Nilai CF:</strong> <span id="popupCF"></span></p>
+        <p><strong>Gejala:</strong></p>
+        <ul class="gejala-list" id="popupGejala"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showPopup(tanggal, pengguna, penyakit, cf, gejala) {
+      document.getElementById('popupTanggal').textContent = tanggal || '-';
+      document.getElementById('popupPenyakit').textContent = penyakit || '-';
+      document.getElementById('popupCF').textContent = cf || '-';
+
+      const gejalaList = document.getElementById('popupGejala');
+      gejalaList.innerHTML = '';
+
+      if (gejala) {
+        const gejalaArray = gejala.split(', ');
+        gejalaArray.forEach(item => {
+          const li = document.createElement('li');
+          li.className = 'gejala-item';
+          li.textContent = item;
+          gejalaList.appendChild(li);
+        });
+      } else {
+        const li = document.createElement('li');
+        li.className = 'gejala-item';
+        li.textContent = 'Tidak ada gejala yang dipilih';
+        gejalaList.appendChild(li);
+      }
+
+      document.getElementById('detailPopup').style.display = 'flex';
+    }
+
+    function closePopup() {
+      document.getElementById('detailPopup').style.display = 'none';
+    }
+
+    document.querySelectorAll('.row-diagnosa').forEach(row => {
+      row.addEventListener('click', function () {
+        const tanggal = this.getAttribute('data-tanggal');
+        const pengguna = this.getAttribute('data-pengguna');
+        const penyakit = this.getAttribute('data-penyakit');
+        const cf = this.getAttribute('data-cf');
+        const gejala = this.getAttribute('data-gejala');
+        showPopup(tanggal, pengguna, penyakit, cf, gejala);
+      });
+    });
+
+    document.getElementById('detailPopup').addEventListener('click', function (e) {
+      if (e.target === this) {
+        closePopup();
+      }
+    });
+  </script>
+{% endblock %}

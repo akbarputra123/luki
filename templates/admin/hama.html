@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Manajemen Hama dan Penyakit{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin//hama.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Manajemen Hama dan Penyakit</h1>
+<!-- Flash Message -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+<!-- Form Tambah Penyakit/Hama -->
+<section>
+  <h2>Tambah Penyakit/Hama </h2>
+  <form action="/admin/hama/tambah" method="POST">
+    <div>
+      <label for="kode_penyakit">Kode Penyakit/Hama:</label>
+      <input type="text" id="kode_penyakit" name="kode_penyakit" required>
+    </div>
+    <div>
+      <label for="nama_penyakit">Nama Penyakit/Hama:</label>
+      <input type="text" id="nama_penyakit" name="nama_penyakit" required>
+    </div>
+    <div>
+      <label for="deskripsi">Deskripsi:</label>
+      <textarea id="deskripsi" name="deskripsi"></textarea>
+    </div>
+    <div>
+      <label for="solusi">Solusi:</label>
+      <textarea id="solusi" name="solusi"></textarea>
+    </div>
+    <button type="submit" class="btn-tambah">Tambah Penyakit/Hama</button>
+  </form>
+</section>
+
+<!-- Daftar Penyakit/Hama -->
+<section>
+  <h2>Daftar Penyakit/Hama</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Kode</th>
+        <th>Nama Penyakit/Hama</th>
+        <th>Deskripsi</th>
+        <th>Solusi</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for penyakit in daftar_penyakit %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ penyakit.kode_penyakit }}</td>
+        <td>{{ penyakit.nama_penyakit }}</td>
+        <td>{{ penyakit.deskripsi }}</td>
+        <td>{{ penyakit.solusi }}</td>
+        <td data-label="Aksi">
+          <div class="btn-group">
+            <button type="button" class="btn-edit"
+              onclick="openEditModal({{ penyakit.id }}, '{{ penyakit.kode_penyakit }}', '{{ penyakit.nama_penyakit }}', `{{ penyakit.deskripsi | escape }}`, '{{ penyakit.solusi }}')">
+              Edit
+            </button>
+            <form action="/admin/hama/hapus/{{ penyakit.id }}" method="POST"
+              onsubmit="return confirm('Apakah Anda yakin ingin menghapus penyakit/hama ini?')">
+              <button type="submit" class="btn-hapus">Hapus</button>
+            </form>
+          </div>
+        </td>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<!-- Modal Edit -->
+<div id="editModal" class="modal">
+
+  <h2>Edit Penyakit/Hama</h2>
+  <form id="editForm" method="POST">
+    <input type="hidden" id="edit_id" name="id">
+    <div>
+      <label for="edit_kode_penyakit">Kode:</label>
+      <input type="text" id="edit_kode_penyakit" name="kode_penyakit" required>
+    </div>
+    <div>
+      <label for="edit_nama_penyakit">Nama:</label>
+      <input type="text" id="edit_nama_penyakit" name="nama_penyakit" required>
+    </div>
+    <div>
+      <label for="edit_deskripsi">Deskripsi:</label>
+      <textarea id="edit_deskripsi" name="deskripsi"></textarea>
+    </div>
+    <div>
+      <label for="edit_solusi">Solusi:</label>
+      <textarea id="edit_solusi" name="solusi"></textarea>
+    </div>
+    <button type="submit">Simpan Perubahan</button>
+    <button type="button" onclick="closeEditModal()">Batal</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin/edit_hama.js') }}"></script>
+{% endblock %}

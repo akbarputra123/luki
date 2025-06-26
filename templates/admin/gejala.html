@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Manajemen Gejala{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/gejala.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Manajemen Gejala</h1>
+
+<!-- Flash Message -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Form Tambah Gejala -->
+<section>
+  <h2>Tambah Gejala </h2>
+  <form action="/admin/gejala/tambah" method="POST">
+    <div>
+      <label for="kode_gejala">Kode Gejala:</label>
+      <input type="text" id="kode_gejala" name="kode_gejala" required>
+    </div>
+    <div>
+      <label for="nama_gejala">Nama Gejala:</label>
+      <input type="text" id="nama_gejala" name="nama_gejala" required>
+    </div>
+    <div>
+      <label for="deskripsi">Deskripsi:</label>
+      <textarea id="deskripsi" name="deskripsi"></textarea>
+    </div>
+    <div>
+      <label for="kategori">Kategori:</label>
+      <input type="text" id="kategori" name="kategori">
+    </div>
+    <button type="submit" class="btn-tambah">Tambah Gejala</button>
+  </form>
+</section>
+
+<!-- Daftar Gejala -->
+<section>
+  <h2>Daftar Gejala</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Kode Gejala</th>
+        <th>Nama Gejala</th>
+        <th>Deskripsi</th>
+        <th>Kategori</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for gejala in daftar_gejala %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ gejala.kode_gejala }}</td>
+        <td>{{ gejala.nama_gejala }}</td>
+        <td>{{ gejala.deskripsi }}</td>
+        <td>{{ gejala.kategori }}</td>
+        <td>
+          <div class="btn-group">
+            <button type="button" class="btn-edit"
+              onclick="bukaModalEdit({{ gejala.id }}, '{{ gejala.kode_gejala }}', '{{ gejala.nama_gejala }}', `{{ gejala.deskripsi | escape }}`, '{{ gejala.kategori }}')">
+              Edit
+            </button>
+            <form action="/admin/gejala/hapus/{{ gejala.id }}" method="POST" style="display:inline;">
+              <button type="submit" class="btn-delete" onclick="return confirm('Apakah Anda yakin ingin menghapus gejala ini?')">
+                Hapus
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<!-- Modal Edit Gejala -->
+<div id="modalEdit" style="display: none;">
+  <h2>Edit Gejala</h2>
+  <form id="formEditGejala" method="POST">
+    <input type="hidden" id="edit_id" name="id">
+    <div>
+      <label for="edit_kode_gejala">Kode Gejala:</label>
+      <input type="text" id="edit_kode_gejala" name="kode_gejala" required>
+    </div>
+    <div>
+      <label for="edit_nama_gejala">Nama Gejala:</label>
+      <input type="text" id="edit_nama_gejala" name="nama_gejala" required>
+    </div>
+    <div>
+      <label for="edit_deskripsi">Deskripsi:</label>
+      <textarea id="edit_deskripsi" name="deskripsi"></textarea>
+    </div>
+    <div>
+      <label for="edit_kategori">Kategori:</label>
+      <input type="text" id="edit_kategori" name="kategori">
+    </div>
+    <button type="submit">Simpan Perubahan</button>
+    <button type="button" onclick="tutupModal()">Batal</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin/gejala.js') }}"></script>
+{% endblock %}
