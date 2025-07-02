@@ -10,6 +10,7 @@
 <h1>Manajemen Gejala</h1>
 
 <!-- Flash Message -->
+
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     <div class="flash-messages">
@@ -20,13 +21,14 @@
   {% endif %}
 {% endwith %}
 
+
 <!-- Form Tambah Gejala -->
 <section>
   <h2>Tambah Gejala </h2>
   <form action="/admin/gejala/tambah" method="POST">
     <div>
       <label for="kode_gejala">Kode Gejala:</label>
-      <input type="text" id="kode_gejala" name="kode_gejala" required>
+      <input type="text" id="kode_gejala" name="kode_gejala" value="{{ kode_terakhir }}" required>
     </div>
     <div>
       <label for="nama_gejala">Nama Gejala:</label>
@@ -43,7 +45,6 @@
     <button type="submit" class="btn-tambah">Tambah Gejala</button>
   </form>
 </section>
-
 <!-- Daftar Gejala -->
 <section>
   <h2>Daftar Gejala</h2>

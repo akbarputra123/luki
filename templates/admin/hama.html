@@ -23,7 +23,8 @@
   <form action="/admin/hama/tambah" method="POST">
     <div>
       <label for="kode_penyakit">Kode Penyakit/Hama:</label>
-      <input type="text" id="kode_penyakit" name="kode_penyakit" required>
+      <input type="text" id="kode_penyakit" name="kode_penyakit" value="{{ kode_terakhir }}" required >
+
     </div>
     <div>
       <label for="nama_penyakit">Nama Penyakit/Hama:</label>

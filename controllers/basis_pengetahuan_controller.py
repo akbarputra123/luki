@@ -1,7 +1,7 @@
-from flask import render_template  # ✅ WAJIB untuk render_template berfungsi
 from models.db import get_db_connection
 
 class BasisPengetahuanController:
+    # Fungsi untuk mengambil semua gejala dari database
     def lihatSemuaGejala(self):
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -9,7 +9,8 @@ class BasisPengetahuanController:
         daftar_gejala = cursor.fetchall()
         conn.close()
         return daftar_gejala
-    
+
+    # Fungsi untuk mengambil semua penyakit dari database
     def lihatSemuaPenyakit(self):
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -17,7 +18,8 @@ class BasisPengetahuanController:
         daftar_penyakit = cursor.fetchall()
         conn.close()
         return daftar_penyakit
-    
+
+    # Fungsi untuk mengambil semua aturan dari database
     def lihatSemuaAturan(self):
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -33,29 +35,3 @@ class BasisPengetahuanController:
         daftar_aturan = cursor.fetchall()
         conn.close()
         return daftar_aturan
-    
-    def lihatBasisPengetahuan(self):
-        daftar_gejala = self.lihatSemuaGejala()
-        daftar_penyakit = self.lihatSemuaPenyakit()
-        daftar_aturan = self.lihatSemuaAturan()
-        
-        return render_template('admin/basis.html',
-                            daftar_gejala=daftar_gejala,
-                            daftar_penyakit=daftar_penyakit,
-                            daftar_aturan=daftar_aturan)
-    
-    def lihatGejala(self):
-        daftar_gejala = self.lihatSemuaGejala()
-        return render_template('admin/card_gejala.html',
-                            daftar_gejala=daftar_gejala)
-    
-    def lihatPenyakit(self):
-        daftar_penyakit = self.lihatSemuaPenyakit()
-        return render_template('admin/card_penyakit.html',
-                            daftar_penyakit=daftar_penyakit)
-    
-    def lihatAturan(self):
-        daftar_aturan = self.lihatSemuaAturan()
-        return render_template('admin/card_aturan.html',
-                            daftar_aturan=daftar_aturan)
-    

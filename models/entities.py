@@ -1,9 +1,9 @@
-# models/entities.py
 from abc import ABC, abstractmethod
 from flask import session
 from models.db import get_db_connection
-import bcrypt
 from datetime import datetime
+import bcrypt
+
 from models.objects import Gejala, Penyakit, Aturan, HasilDiagnosa
 
 # Abstract class Akun
@@ -14,15 +14,28 @@ class Akun(ABC):
         self.password = password
 
     @abstractmethod
-    def login(self):
+    def login(self, username, password):
         pass
 
-# User class
+# ==========================
+# USER CLASS
+# ==========================
 class User(Akun):
-    def __init__(self, id, username, password, nama_lengkap, tanggal_lahir):
+    def __init__(self, id, username, password, namaLengkap, tanggalLahir):
         super().__init__(id, username, password)
-        self.nama_lengkap = nama_lengkap
-        self.tanggal_lahir = tanggal_lahir
+        self.nama_lengkap = namaLengkap
+        self.tanggal_lahir = tanggalLahir
+
+    def login(self, username, password):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM User_Tabel WHERE username = %s", (username,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
+            return User(user['id'], user['username'], user['password'], user['nama_lengkap'], user['tanggal_lahir'])
+        return None
 
     def register(self, nama, username, password, confirm_password, tanggal_lahir):
         conn = get_db_connection()
@@ -84,13 +97,17 @@ class User(Akun):
         return True, 'Password berhasil diperbarui'
 
     def konsultasi(self, gejala_terpilih_ids):
-        from models.managers import AturanManager, PenyakitManager
-        aturan_mgr = AturanManager()
-        penyakit_mgr = PenyakitManager()
         cf_engine = CertaintyFactorEngine()
 
-        aturan_list = aturan_mgr.lihatSemuaAturan()
-        penyakit_list = penyakit_mgr.lihatSemuaPenyakit()
+        # Ambil semua aturan
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Aturan_Tabel")
+        aturan_list = [Aturan(**a) for a in cursor.fetchall()]
+
+        # Ambil semua penyakit
+        cursor.execute("SELECT * FROM Penyakit_Tabel")
+        penyakit_list = [Penyakit(**p) for p in cursor.fetchall()]
 
         hasil_cf = {}
         for penyakit in penyakit_list:
@@ -109,8 +126,6 @@ class User(Akun):
         penyakit_tertinggi = max(hasil_cf, key=hasil_cf.get)
         nilai_cf_tertinggi = hasil_cf[penyakit_tertinggi]
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO HasilDiagnosa_Tabel (user_id, penyakit_id, nilai_cf, tanggal_diagnosa, gejala_terpilih)
             VALUES (%s, %s, %s, %s, %s)
@@ -133,31 +148,49 @@ class User(Akun):
         hasil_list = [HasilDiagnosa(**row) for row in cursor.fetchall()]
         conn.close()
         return hasil_list
-    
 
-# Admin class
+# ==========================
+# ADMIN CLASS
+# ==========================
 class Admin(Akun):
     def __init__(self, id, username, password):
         super().__init__(id, username, password)
 
     def kelolaGejala(self):
-        from models.managers import GejalaManager
-        return GejalaManager().lihatSemuaGejala()
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Gejala_Tabel ORDER BY kode_gejala")
+        gejala_list = [Gejala(**g) for g in cursor.fetchall()]
+        conn.close()
+        return gejala_list
 
     def kelolaPenyakit(self):
-        from models.managers import PenyakitManager
-        return PenyakitManager().lihatSemuaPenyakit()
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Penyakit_Tabel ORDER BY kode_penyakit")
+        penyakit_list = [Penyakit(**p) for p in cursor.fetchall()]
+        conn.close()
+        return penyakit_list
 
     def kelolaAturan(self):
-        from models.managers import AturanManager
-        return AturanManager().lihatSemuaAturan()
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Aturan_Tabel ORDER BY id")
+        aturan_list = [Aturan(**a) for a in cursor.fetchall()]
+        conn.close()
+        return aturan_list
 
     def lihatRiwayat(self):
-        from models.managers import RiwayatManager
-        return RiwayatManager().lihatSemuaRiwayat()
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM HasilDiagnosa_Tabel ORDER BY tanggal_diagnosa DESC")
+        riwayat_list = [HasilDiagnosa(**r) for r in cursor.fetchall()]
+        conn.close()
+        return riwayat_list
 
-
-# Certainty Factor Engine
+# ==========================
+# CERTAINTY FACTOR ENGINE
+# ==========================
 class CertaintyFactorEngine:
     def hitungCF(self, mb, md):
         return mb - md
@@ -168,9 +201,31 @@ class CertaintyFactorEngine:
         combined = cf_list[0]
         for cf in cf_list[1:]:
             combined = combined + cf * (1 - combined)
-        return combined
+        return round(combined, 4)
 
-# Backward Chaining Engine (opsional)
+# ==========================
+# BACKWARD CHAINING ENGINE (opsional)
+# ==========================
 class BackwardChainingEngine:
-    def inferensi(self, user_input):
-        pass  # Belum diimplementasikan
+    def inferensi(self, gejala_terpilih_ids):
+        # Contoh implementasi dasar untuk backward chaining
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Ambil semua aturan
+        cursor.execute("SELECT * FROM Aturan_Tabel")
+        aturan_list = cursor.fetchall()
+
+        # Ambil semua penyakit
+        cursor.execute("SELECT * FROM Penyakit_Tabel")
+        penyakit_list = cursor.fetchall()
+
+        hasil = []
+        for penyakit in penyakit_list:
+            id_penyakit = penyakit['id']
+            gejala_penyakit = [a['gejala_id'] for a in aturan_list if a['penyakit_id'] == id_penyakit]
+            if all(str(gid) in gejala_terpilih_ids for gid in gejala_penyakit):
+                hasil.append(penyakit)
+
+        conn.close()
+        return hasil if hasil else None

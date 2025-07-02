@@ -300,3 +300,7 @@ a:hover {
 .flash.error {
   background-color: #ef4444;
 }
+.flash.danger {
+  background-color: #ef4444; /* merah */
+  color: #fff;
+}

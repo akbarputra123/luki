@@ -1,7 +1,7 @@
 from flask import flash, redirect, render_template, request, session, url_for
 from models.db import get_db_connection
-from flask import flash, redirect, render_template, request, session, url_for
-from models.db import get_db_connection
+from engine.cf_engine import CertaintyFactorEngine
+from engine.backward_engine import BackwardChainingEngine
 
 class DiagnosaController:
     def mulaiKonsultasi(self):
@@ -13,7 +13,6 @@ class DiagnosaController:
             cursor.execute("SELECT * FROM Aturan_Tabel")
             semua_aturan = cursor.fetchall()
             conn.close()
-
             session['penyakit_list'] = [dict(p) for p in semua_penyakit]
             session['aturan_list'] = [dict(a) for a in semua_aturan]
             session['gejala_jawab'] = {}
@@ -61,47 +60,38 @@ class DiagnosaController:
         penyakit_list = session.get('penyakit_list', [])
         aturan_list = session.get('aturan_list', [])
 
+        cf_engine = CertaintyFactorEngine()
         penyakit_dict = {}
-        for aturan in aturan_list:
-            penyakit_id = aturan['penyakit_id']
-            gejala_id = str(aturan['gejala_id'])
 
-            if penyakit_id not in penyakit_dict:
-                penyakit = next((p for p in penyakit_list if p['id'] == penyakit_id), None)
-                penyakit_dict[penyakit_id] = {
+        for aturan in aturan_list:
+            pid = aturan['penyakit_id']
+            gid = str(aturan['gejala_id'])
+
+            if pid not in penyakit_dict:
+                penyakit = next((p for p in penyakit_list if p['id'] == pid), None)
+                penyakit_dict[pid] = {
                     'nama_penyakit': penyakit['nama_penyakit'],
                     'deskripsi_penyakit': penyakit['deskripsi'],
                     'solusi_penyakit': penyakit['solusi'],
-                    'cf_total': 0,
-                    'cf_sebelumnya': 0
+                    'cf_list': []
                 }
 
-            if gejala_id in gejala_jawab:
-                cf_user = gejala_jawab[gejala_id]
-                mb = aturan['mb']
-                md = aturan['md']
-                cf_aturan = mb - md
-                cf_gejala = round(cf_user * cf_aturan, 2)
+            if gid in gejala_jawab:
+                cf_user = gejala_jawab[gid]
+                cf = cf_engine.hitung_cf(cf_user, aturan['mb'], aturan['md'])
+                penyakit_dict[pid]['cf_list'].append(cf)
 
-                pd = penyakit_dict[penyakit_id]
-                if pd['cf_sebelumnya'] == 0:
-                    pd['cf_total'] = cf_gejala
-                else:
-                    pd['cf_total'] = round(
-                        pd['cf_sebelumnya'] + cf_gejala * (1 - pd['cf_sebelumnya']), 2
-                    )
-                pd['cf_sebelumnya'] = pd['cf_total']
-
-        hasil_diagnosa = [
-            {
-                'penyakit_id': pid,
-                'nama_penyakit': data['nama_penyakit'],
-                'deskripsi_penyakit': data['deskripsi_penyakit'],
-                'solusi_penyakit': data['solusi_penyakit'],
-                'nilai_cf': round(data['cf_total'], 2)
-            }
-            for pid, data in penyakit_dict.items() if data['cf_total'] > 0
-        ]
+        hasil_diagnosa = []
+        for pid, data in penyakit_dict.items():
+            if data['cf_list']:
+                nilai_cf = cf_engine.kombinasi_cf(data['cf_list'])
+                hasil_diagnosa.append({
+                    'penyakit_id': pid,
+                    'nama_penyakit': data['nama_penyakit'],
+                    'deskripsi_penyakit': data['deskripsi_penyakit'],
+                    'solusi_penyakit': data['solusi_penyakit'],
+                    'nilai_cf': round(nilai_cf, 2)
+                })
 
         hasil_diagnosa.sort(key=lambda x: x['nilai_cf'], reverse=True)
 
@@ -112,11 +102,8 @@ class DiagnosaController:
                 return redirect(url_for('konsultasi_route'))
 
             cursor = conn.cursor()
-
-            # Hapus riwayat sebelumnya dari user
             cursor.execute("DELETE FROM HasilDiagnosa_Tabel WHERE user_id = %s", (session['user_id'],))
 
-            # Ambil gejala yang relevan untuk penyakit dengan CF tertinggi
             penyakit_tertinggi = hasil_diagnosa[0]['penyakit_id']
             gejala_relevan = []
             for aturan in aturan_list:
@@ -127,7 +114,6 @@ class DiagnosaController:
 
             gejala_terpilih = ','.join(gejala_relevan)
 
-            # Simpan hasil diagnosa
             cursor.execute('''
                 INSERT INTO HasilDiagnosa_Tabel (
                   user_id, penyakit_id, nilai_cf, tanggal_diagnosa, gejala_terpilih
@@ -150,57 +136,3 @@ class DiagnosaController:
             current_step='result',
             hasil=hasil_diagnosa[0] if hasil_diagnosa else None
         )
-
-    def lihatDetailDiagnosa(self, id):
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute('''
-            SELECT h.id, h.tanggal_diagnosa, h.nilai_cf, h.gejala_terpilih,
-                   p.nama_penyakit, p.deskripsi as deskripsi_penyakit, p.solusi as solusi_penyakit,
-                   u.nama_lengkap
-            FROM HasilDiagnosa_Tabel h
-            JOIN Penyakit_Tabel p ON h.penyakit_id = p.id
-            JOIN User_Tabel u ON u.id = h.user_id
-            WHERE h.id = %s
-        ''', (id,))
-        diagnosa = cursor.fetchone()
-
-        if not diagnosa:
-            flash('Data diagnosa tidak ditemukan', 'error')
-            return redirect(url_for('riwayat_konsultasi_route'))
-
-        # Ambil nama gejala dari id
-        gejala_list = []
-        if diagnosa['gejala_terpilih']:
-            gejala_ids = diagnosa['gejala_terpilih'].split(',')
-            format_strings = ','.join(['%s'] * len(gejala_ids))
-            cursor.execute(f'''
-                SELECT nama_gejala FROM Gejala_Tabel
-                WHERE id IN ({format_strings})
-            ''', gejala_ids)
-            gejala_list = cursor.fetchall()
-
-        diagnosa['gejala_terpilih'] = gejala_list
-        conn.close()
-
-        return render_template('user/detail_riwayat.html', diagnosa=diagnosa)
-
-    def lihatRiwayatKonsultasi(self, user_id):
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute('''
-            SELECT h.id, h.tanggal_diagnosa, h.nilai_cf, 
-                   p.nama_penyakit, u.nama_lengkap
-            FROM HasilDiagnosa_Tabel h
-            JOIN Penyakit_Tabel p ON h.penyakit_id = p.id
-            JOIN User_Tabel u ON h.user_id = u.id
-            WHERE h.user_id = %s
-            ORDER BY h.tanggal_diagnosa DESC
-        ''', (user_id,))
-
-        riwayat = cursor.fetchall()
-        conn.close()
-
-        return render_template('user/riwayat_konsultasi.html', riwayat=riwayat)

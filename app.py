@@ -113,11 +113,6 @@ def riwayat_route():
 def detail_riwayat_route(id):
     return riwayat_controller.lihatDetailDiagnosa(id)
 
-# Basis Pengetahuan Route
-@app.route('/admin/basis-pengetahuan', methods=['GET'])
-def basis_pengetahuan_route():
-    return basis_pengetahuan_controller.lihatBasisPengetahuan()
-
 # Diagnosa Routes
 @app.route('/konsultasi', methods=['GET', 'POST'])
 def konsultasi_route():
@@ -143,7 +138,7 @@ def konsultasi_route():
 def riwayat_konsultasi_route():
     if 'user_id' not in session:
         return redirect(url_for('login_route'))
-    return diagnosa_controller.lihatRiwayatKonsultasi(session['user_id'])
+    return riwayat_controller.lihatRiwayatDiagnosa()
 
 @app.route('/riwayat-konsultasi/detail/<int:id>')
 def detail_riwayat_konsultasi_route(id):
@@ -152,17 +147,35 @@ def detail_riwayat_konsultasi_route(id):
     return diagnosa_controller.lihatDetailRiwayat(id)
 # Add these new routes to your Flask app
 
+# Basis Pengetahuan Route
+@app.route('/admin/basis-pengetahuan', methods=['GET'])
+def basis_pengetahuan_route():
+    daftar_gejala = basis_pengetahuan_controller.lihatSemuaGejala()
+    daftar_penyakit = basis_pengetahuan_controller.lihatSemuaPenyakit()
+    daftar_aturan = basis_pengetahuan_controller.lihatSemuaAturan()
+    return render_template('admin/basis.html',
+                           daftar_gejala=daftar_gejala,
+                           daftar_penyakit=daftar_penyakit,
+                           daftar_aturan=daftar_aturan)
+
+
 @app.route('/admin/basis-pengetahuan/gejala')
 def card_gejala_route():
-    return basis_pengetahuan_controller.lihatGejala()
+    daftar_gejala = basis_pengetahuan_controller.lihatSemuaGejala()
+    return render_template('admin/card_gejala.html',
+                           daftar_gejala=daftar_gejala)
 
 @app.route('/admin/basis-pengetahuan/penyakit')
 def card_penyakit_route():
-    return basis_pengetahuan_controller.lihatPenyakit()
+    daftar_penyakit = basis_pengetahuan_controller.lihatSemuaPenyakit()
+    return render_template('admin/card_penyakit.html',
+                           daftar_penyakit=daftar_penyakit)
 
 @app.route('/admin/basis-pengetahuan/aturan')
 def card_aturan_route():
-    return basis_pengetahuan_controller.lihatAturan()
+    daftar_aturan = basis_pengetahuan_controller.lihatSemuaAturan()
+    return render_template('admin/card_aturan.html',
+                           daftar_aturan=daftar_aturan)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
