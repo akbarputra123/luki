@@ -146,3 +146,210 @@ main {
     margin-left: 0;
   }
 }
+/* Admin Dashboard Styles */
+.admin-dashboard {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  color: #333;
+}
+
+.dashboard-header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.admin-name {
+  color: #3498db;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+}
+
+/* System Overview */
+.system-overview {
+  margin-bottom: 3rem;
+}
+
+.overview-card {
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.overview-text {
+  flex: 1;
+  padding: 2rem;
+}
+
+.overview-text h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.overview-text p {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.feature i {
+  color: #3498db;
+  margin-right: 0.7rem;
+  font-size: 1.1rem;
+}
+
+.overview-image {
+  flex: 1;
+  min-height: 300px;
+  background: #f1f5f9;
+}
+
+.overview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* System Stats */
+.system-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  background: #e3f2fd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1.5rem;
+  color: #3498db;
+  font-size: 1.5rem;
+}
+
+.stat-info h3 {
+  color: #7f8c8d;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.stat-info .count {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* Disease Showcase */
+.disease-showcase {
+  margin-bottom: 2rem;
+}
+
+.disease-showcase h2 {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.disease-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.disease-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.disease-card:hover {
+  transform: translateY(-5px);
+}
+
+.disease-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.disease-card h3 {
+  color: #2c3e50;
+  padding: 1rem 1.5rem 0;
+  font-size: 1.2rem;
+}
+
+.disease-card p {
+  color: #555;
+  padding: 0 1.5rem 1.5rem;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .overview-card {
+    flex-direction: column;
+  }
+  
+  .overview-image {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header h1 {
+    font-size: 2rem;
+  }
+  
+  .features {
+    flex-direction: column;
+  }
+}

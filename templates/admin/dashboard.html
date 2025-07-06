@@ -1,9 +1,92 @@
-<!-- templates/admin/dashboard.html -->
 {% extends 'base.html' %}
 
 {% block title %}Dashboard Admin{% endblock %}
 
 {% block content %}
-  <h1>Selamat Datang, Admin!</h1>
-  <p>Silakan pilih menu di sebelah kiri untuk mengelola sistem.</p>
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1>Selamat Datang, <span class="admin-name">Admin!</span></h1>
+    <p class="subtitle">Panel Kontrol Sistem Pakar Diagnosa Penyakit Kentang</p>
+  </div>
+
+  <div class="dashboard-content">
+    <div class="system-overview">
+      <div class="overview-card">
+        <div class="overview-text">
+          <h2>Tentang Sistem</h2>
+          <p>Sistem pakar ini dirancang untuk membantu petani dan ahli pertanian dalam mengidentifikasi penyakit pada tanaman kentang secara akurat menggunakan metode forward chaining dan basis pengetahuan yang komprehensif.</p>
+          <div class="features">
+            <div class="feature">
+              <i class="fas fa-seedling"></i>
+              <span>Diagnosa 10+ penyakit kentang</span>
+            </div>
+            <div class="feature">
+              <i class="fas fa-brain"></i>
+              <span>Basis pengetahuan ahli</span>
+            </div>
+            
+          </div>
+        </div>
+        <div class="overview-image">
+          <img src="{{ url_for('static', filename='images/kentang.jpeg') }}" alt="Sistem Diagnosa Kentang">
+        </div>
+      </div>
+    </div>
+
+    <div class="system-stats">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Pengguna Terdaftar</h3>
+          <p class="count">1,245</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-diagnoses"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Diagnosa Hari Ini</h3>
+          <p class="count">87</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-bug"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Penyakit Terdeteksi</h3>
+          <p class="count">15</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="disease-showcase">
+      <h2>Penyakit Kentang Umum</h2>
+      <div class="disease-grid">
+        <div class="disease-card">
+          <img src="{{ url_for('static', filename='images/1.jpg') }}" alt="Late Blight">
+          <h3>Late Blight</h3>
+          <p>Disebabkan oleh Phytophthora infestans, menyebabkan bercak daun dan pembusukan umbi.</p>
+        </div>
+        
+        <div class="disease-card">
+          <img src="{{ url_for('static', filename='images/2.jpg') }}" alt="Early Blight">
+          <h3>Early Blight</h3>
+          <p>Disebabkan oleh Alternaria solani, ditandai dengan bercak konsentris pada daun.</p>
+        </div>
+        
+        <div class="disease-card">
+          <img src="{{ url_for('static', filename='images/3.jpeg') }}" alt="Blackleg">
+          <h3>Blackleg</h3>
+          <p>Disebabkan oleh bakteri Pectobacterium, menyebabkan pembusukan batang dan umbi.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
